@@ -11,13 +11,10 @@ namespace ShellFxTest
         [TestMethod]
         public void TestMethod1()
         {
-            var parser = new ArgumentParser(typeof(MyArgs));
+            string[] args = new string[2] { "-Pfad", "c:\\hallo" };
+            var parsed = new ArgumentParser<MyArgs>().Parse(args);
 
-            foreach (var item in parser.Parse())
-            {
-                Console.WriteLine(item);
-            }
-
+            Assert.AreEqual("Pfad", parsed.Pfad);
         }
     }
 

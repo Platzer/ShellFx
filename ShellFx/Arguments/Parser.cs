@@ -4,34 +4,75 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Text.RegularExpressions;
+
 namespace ShellFx.Arguments
 {
-    public abstract class ParserBase
+    public abstract class ParserBase<T> where T : new()
     {
-        protected Type Type {get; private set;}
+        protected Type Type { get; private set; }
 
         protected Dictionary<string, string> Arguments { get; set; }
 
-        public ParserBase(Type type)
+        public ParserBase()
         {
-            Type = type;
+            Type = typeof(T);
+            Arguments = new Dictionary<string, string>();
         }
     }
 
-    public class ArgumentParser : ParserBase
+    public class ArgumentParser<T> : ParserBase<T> where T : new()
     {
-        public ArgumentParser(Type type) : base(type) { }
+        public ArgumentParser() : base() { }
 
-        public IEnumerable<string> Parse()
+        public T Parse(string[] args)
         {
-            List<string> Ergebnis = new List<string>();
+            T Ergebnis = new T();
 
-            foreach (var item in Type.GetArguments())
-            {
-                Ergebnis.Add(string.Format("{0} - {1} - {2} - {3}", item.Name, item.PropertyType, item.GetAttributes<ArgumentDefinitionAttribute>()[0].ShortCut, item.GetAttributes<ArgumentDefinitionAttribute>()[0].Name));
-            }
+            var ArgumentsToSet = Type.GetArguments();
+
+
 
             return Ergebnis;
+        }
+
+        private void ParseInternalArguments(string[] args)
+        {
+            //(?<sign>--|-|/)(?<arg>[\w]{1,})((?<sep>:|=)(?<val>.*))? - Pattern
+            Regex RegexCurrentArgNull = new Regex(string.Format("(?<sign>{2}|{1}|{0})(?<arg>[\\w]{1,})((?<sep>{3}|{4})(?<val>.*))?", 
+                                                                Constants.ArgumentPräfixWindows, 
+                                                                Constants.ArgumentPräfixUnixShort, 
+                                                                Constants.ArgumentPräfixUnixLong,
+                                                                Constants.ArgumentSplitterWindows,
+                                                                Constants.ArgumentSplitterUnix));
+            string currentArg = null;
+            foreach (var arg in args)
+            {
+                if (currentArg == null)
+                {
+                    var matches = RegexCurrentArgNull.Matches(arg);
+                    if (matches.Count == 1)
+                    {
+                        currentArg = matches[0].Groups["arg"].Value;
+                        Arguments.Add(currentArg, null);
+
+                        if (!string.IsNullOrEmpty(matches[0].Groups["value"].Value))
+                        {
+                            Arguments[currentArg] = matches[0].Groups["value"].Value;
+                            currentArg = null;
+                        }
+                    }
+                    else
+                    {
+                        Arguments.Add(null, arg);
+                        continue;
+                    }
+                }
+                else
+                {
+
+                }
+            }
         }
     }
 }
