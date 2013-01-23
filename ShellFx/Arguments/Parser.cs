@@ -12,7 +12,7 @@ namespace ShellFx.Arguments
     {
         protected Type Type { get; private set; }
 
-        protected Dictionary<string, string> Arguments { get; set; }
+        public Dictionary<string, string> Arguments { get; set; }
 
         public ParserBase()
         {
@@ -31,46 +31,49 @@ namespace ShellFx.Arguments
 
             var ArgumentsToSet = Type.GetArguments();
 
-
+            ParseInternalArguments(args);
 
             return Ergebnis;
         }
 
         private void ParseInternalArguments(string[] args)
         {
-            //(?<sign>--|-|/)(?<arg>[\w]{1,})((?<sep>:|=)(?<val>.*))? - Pattern
-            Regex RegexCurrentArgNull = new Regex(string.Format("(?<sign>{2}|{1}|{0})(?<arg>[\\w]{1,})((?<sep>{3}|{4})(?<val>.*))?", 
-                                                                Constants.ArgumentPräfixWindows, 
-                                                                Constants.ArgumentPräfixUnixShort, 
-                                                                Constants.ArgumentPräfixUnixLong,
-                                                                Constants.ArgumentSplitterWindows,
-                                                                Constants.ArgumentSplitterUnix));
+            //(?<sign>--|-|/)(?<arg>[\w]{1,})(((?<sep>:|=)(?<val>.*))|(?<val>\+|\-))? - Pattern
+            Regex RegexCurrentArgNull = new Regex(@"(?<sign>--|-|/)(?<arg>[\w]{1,})(((?<sep>:|=)(?<val>.*))|(?<val>\+|\-))?");
+
             string currentArg = null;
             foreach (var arg in args)
             {
-                if (currentArg == null)
+                var matches = RegexCurrentArgNull.Matches(arg);
+                if (matches.Count >= 1)
                 {
-                    var matches = RegexCurrentArgNull.Matches(arg);
                     if (matches.Count == 1)
                     {
                         currentArg = matches[0].Groups["arg"].Value;
                         Arguments.Add(currentArg, null);
 
-                        if (!string.IsNullOrEmpty(matches[0].Groups["value"].Value))
+                        if (!string.IsNullOrEmpty(matches[0].Groups["val"].Value))
                         {
-                            Arguments[currentArg] = matches[0].Groups["value"].Value;
+                            Arguments[currentArg] = matches[0].Groups["val"].Value;
                             currentArg = null;
                         }
                     }
                     else
                     {
-                        Arguments.Add(null, arg);
+                        Arguments.Add((Arguments.Count).ToString(), arg);
                         continue;
                     }
                 }
                 else
                 {
-
+                    if (currentArg == null)
+                        Arguments.Add((Arguments.Count).ToString(), arg);
+                    else
+                    {
+                        Arguments[currentArg] = arg;
+                        currentArg = null;
+                    }
+                    continue;
                 }
             }
         }

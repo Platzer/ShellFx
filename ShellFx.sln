@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShellFx", "ShellFx\ShellFx.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShellFxTest", "ShellFxTest\ShellFxTest.csproj", "{DF304910-8AD3-4A06-9083-74672CDB8F06}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{72D09206-E7CA-4068-90F3-E56665B9267E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{DF304910-8AD3-4A06-9083-74672CDB8F06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF304910-8AD3-4A06-9083-74672CDB8F06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF304910-8AD3-4A06-9083-74672CDB8F06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72D09206-E7CA-4068-90F3-E56665B9267E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72D09206-E7CA-4068-90F3-E56665B9267E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72D09206-E7CA-4068-90F3-E56665B9267E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72D09206-E7CA-4068-90F3-E56665B9267E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
