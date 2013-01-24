@@ -16,5 +16,18 @@ namespace ShellFx.Arguments
                     where memb.GetCustomAttribute(typeof(NamedArgumentAttribute), true) != null && memb is T
                     select memb as T).ToList();
         }
+
+        internal static List<NamedPropertyData> GetNamedPropertyData(this object obj)
+        {
+            var members = obj.GetType().GetNamedArguments<PropertyInfo>();
+
+            return (from m in members
+                    where m.MemberType == MemberTypes.Property
+                    let att = m.GetCustomAttribute<NamedArgumentAttribute>(true)
+                    select new NamedPropertyData(att.Name,
+                                                 att.ShortCut,
+                                                 m as PropertyInfo,
+                                                 obj)).ToList();
+        }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ShellFx.Arguments
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class NamedArgumentAttribute : Attribute, INamedArgument
+    public class NamedArgumentAttribute : Attribute
     {
         public NamedArgumentAttribute(string name, string shortCut)
         {

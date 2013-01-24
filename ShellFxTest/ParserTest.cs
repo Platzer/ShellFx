@@ -9,7 +9,7 @@ namespace ShellFxTest
     public class ParserTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void ParserTestMultipleValues()
         {
             string[] args = new string[] {"c:\\test ordner2", "-Pfad", "c:\\test ordner", "/switch1", "/switch2-", "c:\\test ordner2", "--double=3.2" };
             var parsed = new ArgumentParser<MyArgs>().Parse(args);
@@ -34,5 +34,9 @@ namespace ShellFxTest
 
         [NamedArgument("double", null)]
         public double Double { get; set; }
+
+        public int Int { get; set; }
+
+        public string Text = string.Empty;
     }
 }

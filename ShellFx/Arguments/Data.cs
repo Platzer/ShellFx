@@ -7,13 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShellFx.Arguments
 {
-    public interface INamedArgument
-    {
-        string Name { get; }
-        string ShortCut { get; }
-    }
-
-    public class NamedPropertyData :INamedArgument
+    public class NamedPropertyData
     {
         public PropertyInfo Data { get; private set; }
 

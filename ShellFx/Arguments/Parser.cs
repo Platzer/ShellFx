@@ -30,12 +30,7 @@ namespace ShellFx.Arguments
         {
             var members = Type.GetNamedArguments<MemberInfo>();
 
-            NamedProperties = (from m in members
-                               where m.MemberType == MemberTypes.Property
-                               select new NamedPropertyData(m.GetCustomAttribute<NamedArgumentAttribute>(true).Name,
-                                                            m.GetCustomAttribute<NamedArgumentAttribute>(true).ShortCut,
-                                                            m as PropertyInfo,
-                                                            Result)).ToList();
+            NamedProperties = Result.GetNamedPropertyData();
         }
 
         protected virtual void ParseInternalParameter(string[] args)

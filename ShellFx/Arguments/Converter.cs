@@ -13,6 +13,35 @@ namespace ShellFx.Arguments
         Type Type {get;}
     }
 
+    public class ConverterEngine
+    {
+        public ConverterEngine()
+        {
+            Converter = new Dictionary<Type, IConverter>();
+            //Adding standard Converter...
+            Add(new BooleanConverter());
+            Add(new StringConverter());
+            Add(new DoubleConverter());
+        }
+
+        Dictionary<Type, IConverter> Converter { get; set; }
+
+        public object Convert(MemberInfo member, string value)
+        {
+            //TODO: den MemberTypen kontrollieren...
+            return Converter[((PropertyInfo)member).PropertyType].Convert(member, value);
+        }
+
+        public void Add(IConverter converter)
+        {
+            if (Converter.ContainsKey(converter.Type))
+                Converter[converter.Type] = converter;
+            else
+                Converter.Add(converter.Type, converter);
+        }
+    }
+
+    #region Converter
     class BooleanConverter : IConverter
     {
         public BooleanConverter()
@@ -68,31 +97,5 @@ namespace ShellFx.Arguments
 
         public Type Type { get; private set; }
     }
-
-    public class ConverterEngine
-    {
-        public ConverterEngine()
-        {
-            Converter = new Dictionary<Type,IConverter>();
-            Add(new BooleanConverter());
-            Add(new StringConverter());
-            Add(new DoubleConverter());
-        }
-        
-        Dictionary<Type,IConverter> Converter { get; set; }
-
-        public object Convert(MemberInfo member, string value)
-        {
-            //TODO: den MemberTypen kontrollieren...
-            return Converter[((PropertyInfo)member).PropertyType].Convert(member, value);
-        }
-
-        public void Add(IConverter converter)
-        {
-            if (Converter.ContainsKey(converter.Type))
-                Converter[converter.Type] = converter;
-            else
-                Converter.Add(converter.Type, converter);
-        }
-    }
+    #endregion Converter
 }
