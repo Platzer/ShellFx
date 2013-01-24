@@ -10,17 +10,11 @@ namespace ShellFx.Arguments
 {
     static class Extensions
     {
-        internal static List<PropertyInfo> GetArguments(this Type t)
+        internal static List<T> GetNamedArguments<T>(this Type t) where T: MemberInfo
         {
-            return (from prop in t.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                    where prop.GetCustomAttribute(typeof(ArgumentDefinitionAttribute),true) != null
-                    select prop).ToList();
-        }
-
-        internal static List<T> GetAttributes<T>(this MemberInfo info)
-        {
-            return (from a in info.GetCustomAttributes(typeof(T), true)
-                    select (T)a).ToList();
+            return (from memb in t.GetMembers(BindingFlags.Instance | BindingFlags.Public)
+                    where memb.GetCustomAttribute(typeof(NamedArgumentAttribute), true) != null && memb is T
+                    select memb as T).ToList();
         }
     }
 }

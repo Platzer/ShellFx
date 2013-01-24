@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace ShellFx.Arguments
 {
@@ -12,12 +13,33 @@ namespace ShellFx.Arguments
     {
         protected Type Type { get; private set; }
 
-        public Dictionary<string, string> Arguments { get; set; }
+        protected T Result { get; private set; }
+
+        protected Dictionary<string, string> Parameter { get; set; }
+
+        protected List<NamedPropertyData> NamedProperties { get; set; }
 
         public ParserBase()
         {
             Type = typeof(T);
-            Arguments = new Dictionary<string, string>();
+            Parameter = new Dictionary<string, string>();
+            Result = new T();
+        }
+
+        protected void ParseInternalNamedArguments()
+        {
+            var members = Type.GetNamedArguments<MemberInfo>();
+
+            NamedProperties = (from m in members
+                               where m.MemberType == MemberTypes.Property
+                               select new NamedPropertyData(m.GetCustomAttribute<NamedArgumentAttribute>(true).Name,
+                                                            m.GetCustomAttribute<NamedArgumentAttribute>(true).ShortCut,
+                                                            m as PropertyInfo,
+                                                            Result)).ToList();
+        }
+
+        protected virtual void ParseInternalParameter(string[] args)
+        {
         }
     }
 
@@ -27,18 +49,32 @@ namespace ShellFx.Arguments
 
         public T Parse(string[] args)
         {
-            T Ergebnis = new T();
+            ParseInternalParameter(args);
+            ParseInternalNamedArguments();
 
-            var ArgumentsToSet = Type.GetArguments();
+            SetInternalNamedProperties();
 
-            ParseInternalArguments(args);
-
-            return Ergebnis;
+            return Result;
         }
 
-        private void ParseInternalArguments(string[] args)
+        private void SetInternalNamedProperties()
         {
-            //(?<sign>--|-|/)(?<arg>[\w]{1,})(((?<sep>:|=)(?<val>.*))|(?<val>\+|\-))? - Pattern
+            foreach (var item in NamedProperties)
+            {
+                //TODO: Casesensetivity einbauen...
+                var Werte = from d in Parameter
+                            where string.Compare(d.Key, item.Name, true) == 0 || string.Compare(d.Key, item.ShortCut, true) == 0
+                            select d.Value;
+                //TODO: Wert mehrmals gesetzt...
+                if (Werte.Count() == 1)
+                {
+                    item.SetValue(Werte.First());
+                }
+            }
+        }
+
+        protected override void ParseInternalParameter(string[] args)
+        {
             Regex RegexCurrentArgNull = new Regex(@"(?<sign>--|-|/)(?<arg>[\w]{1,})(((?<sep>:|=)(?<val>.*))|(?<val>\+|\-))?");
 
             string currentArg = null;
@@ -49,28 +85,28 @@ namespace ShellFx.Arguments
                 {
                     if (matches.Count == 1)
                     {
-                        currentArg = matches[0].Groups["arg"].Value;
-                        Arguments.Add(currentArg, null);
+                        currentArg = matches[0].Groups["arg"].Value.ToLower();
+                        Parameter.Add(currentArg, null);
 
                         if (!string.IsNullOrEmpty(matches[0].Groups["val"].Value))
                         {
-                            Arguments[currentArg] = matches[0].Groups["val"].Value;
+                            Parameter[currentArg] = matches[0].Groups["val"].Value;
                             currentArg = null;
                         }
                     }
                     else
                     {
-                        Arguments.Add((Arguments.Count).ToString(), arg);
+                        Parameter.Add((Parameter.Count).ToString(), arg);
                         continue;
                     }
                 }
                 else
                 {
                     if (currentArg == null)
-                        Arguments.Add((Arguments.Count).ToString(), arg);
+                        Parameter.Add((Parameter.Count).ToString(), arg);
                     else
                     {
-                        Arguments[currentArg] = arg;
+                        Parameter[currentArg] = arg;
                         currentArg = null;
                     }
                     continue;
