@@ -19,20 +19,30 @@ namespace ShellFxTest
             Assert.IsFalse(parsed.Switch2);
             Assert.IsTrue(3.2 == parsed.Double);
         }
+
+        [TestMethod]
+        public void ParserTestHelp()
+        {
+            string[] args = new string[] { "c:\\test ordner2", "-Pfad", "c:\\test ordner", "/switch1", "/switch2-", "c:\\test ordner2", "--double=3.2" };
+            var parsed = new ArgumentParser<MyArgs>();
+            parsed.Parse(args);
+
+            new PrintHelper().PrintPropertiesHelp(Console.Out, parsed.Properties);
+        }
     }
 
     public class MyArgs
     {
-        [NamedArgument("Pfad","p")]
+        [Argument("Pfad","p")]
         public string Pfad { get; set; }
 
-        [NamedArgument("switch2",null)]
+        [Argument("switch2",null)]
         public bool Switch2 { get; set; }
 
-        [NamedArgument("switch1", null)]
+        [Argument("switch1", null)]
         public bool Switch1 { get; set; }
 
-        [NamedArgument("double", null)]
+        [Argument("double", null)]
         public double Double { get; set; }
 
         public int Int { get; set; }

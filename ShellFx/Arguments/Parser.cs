@@ -17,7 +17,7 @@ namespace ShellFx.Arguments
 
         protected Dictionary<string, string> Parameter { get; set; }
 
-        protected List<NamedPropertyData> NamedProperties { get; set; }
+        public List<PropertyData> Properties { get; set; }
 
         public ParserBase()
         {
@@ -26,11 +26,11 @@ namespace ShellFx.Arguments
             Result = new T();
         }
 
-        protected void ParseInternalNamedArguments()
+        protected void ParseInternalArguments()
         {
-            var members = Type.GetNamedArguments<MemberInfo>();
+            var members = Type.GetArguments<MemberInfo>();
 
-            NamedProperties = Result.GetNamedPropertyData();
+            Properties = Result.GetPropertyData();
         }
 
         protected virtual void ParseInternalParameter(string[] args)
@@ -45,16 +45,16 @@ namespace ShellFx.Arguments
         public T Parse(string[] args)
         {
             ParseInternalParameter(args);
-            ParseInternalNamedArguments();
+            ParseInternalArguments();
 
-            SetInternalNamedProperties();
+            SetInternalProperties();
 
             return Result;
         }
 
-        private void SetInternalNamedProperties()
+        private void SetInternalProperties()
         {
-            foreach (var item in NamedProperties)
+            foreach (var item in Properties)
             {
                 //TODO: Casesensetivity einbauen...
                 var Werte = from d in Parameter

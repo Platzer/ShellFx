@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShellFx.Arguments
 {
-    public class NamedPropertyData
+    public class PropertyData
     {
         public PropertyInfo Data { get; private set; }
 
@@ -15,13 +15,16 @@ namespace ShellFx.Arguments
 
         private ConverterEngine Converter { get; set; }
 
-        public NamedPropertyData(string name, string shortCut, PropertyInfo property,object obj)
+        public PropertyData(string name, string shortCut, PropertyInfo property, object obj, string description = null, int? position = null, bool isRequired = false)
         {
             Data = property;
             Name = name;
             ShortCut = shortCut;
             Object = obj;
             Converter = new ConverterEngine();
+            Description = description;
+            Position = position;
+            IsRequired = isRequired;
         }
 
         public void SetValue(string value)
@@ -32,5 +35,19 @@ namespace ShellFx.Arguments
         public string Name { get; private set; }
 
         public string ShortCut { get; private set; }
+
+        public string Description { get; private set; }
+
+        public int? Position { get; private set; }
+
+        public bool IsAnonymous
+        {
+            get
+            {
+                return ShortCut == null && Name == null;
+            }
+        }
+
+        public bool IsRequired { get; private set; }
     }
 }
