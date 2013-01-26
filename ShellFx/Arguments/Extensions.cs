@@ -23,11 +23,13 @@ namespace ShellFx.Arguments
 
             return (from m in members
                     where m.MemberType == MemberTypes.Property
-                    let att = m.GetCustomAttribute<ArgumentAttribute>(true)
-                    select new PropertyData(att.Name,
-                                                 att.ShortCut,
-                                                 m as PropertyInfo,
-                                                 obj)).ToList();
+                    let attArgument = m.GetCustomAttribute<ArgumentAttribute>(true)
+                    let attDescription = m.GetCustomAttribute<ArgumentDescriptionAttribute>(true)
+                    select new PropertyData(attArgument.Name,
+                                            attArgument.ShortCut,
+                                            m as PropertyInfo,
+                                            obj, 
+                                            description: attDescription != null ? attDescription.Description : null)).ToList();
         }
     }
 }

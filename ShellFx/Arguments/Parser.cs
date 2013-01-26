@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using System.Text.RegularExpressions;
 using System.Reflection;
+using System.IO;
 
 namespace ShellFx.Arguments
 {
@@ -17,7 +18,23 @@ namespace ShellFx.Arguments
 
         protected Dictionary<string, string> Parameter { get; set; }
 
-        public List<PropertyData> Properties { get; set; }
+        private List<PropertyData> properties = null;
+        protected List<PropertyData> Properties
+        {
+            get
+            {
+                if (properties == null)
+                {
+                    properties = new List<PropertyData>();
+                    ParseInternalArguments();
+                }
+                return properties;
+            }
+            set
+            {
+                properties = value;
+            }
+        }
 
         public ParserBase()
         {
@@ -45,11 +62,34 @@ namespace ShellFx.Arguments
         public T Parse(string[] args)
         {
             ParseInternalParameter(args);
-            ParseInternalArguments();
 
             SetInternalProperties();
 
             return Result;
+        }
+
+        private PrintHelper printHelper;
+        private PrintHelper PrintHelper
+        {
+            get
+            {
+                if (printHelper == null) { printHelper = new PrintHelper(); }
+                return printHelper;
+            }
+            set
+            {
+                printHelper = value;
+            }
+        }
+
+        public void PrintPropertyHelp()
+        {
+            PrintPropertyHelp(Console.Out);
+        }
+
+        public void PrintPropertyHelp(TextWriter writer)
+        {
+            PrintHelper.PrintPropertiesHelp(writer, Properties);
         }
 
         private void SetInternalProperties()

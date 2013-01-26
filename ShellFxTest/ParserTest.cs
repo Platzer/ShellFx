@@ -27,7 +27,7 @@ namespace ShellFxTest
             var parsed = new ArgumentParser<MyArgs>();
             parsed.Parse(args);
 
-            new PrintHelper().PrintPropertiesHelp(Console.Out, parsed.Properties);
+            parsed.PrintPropertyHelp();
         }
     }
 
