@@ -92,6 +92,29 @@ namespace ShellFx.Arguments
             PrintHelper.PrintPropertiesHelp(writer, Properties);
         }
 
+        public void PrintHead()
+        {
+            PrintHead(Console.Out);
+        }
+
+        public void PrintHead(TextWriter writer)
+        {
+            var Attr = Type.GetCustomAttribute<DescriptionAttribute>();
+            if (Attr != null)
+                PrintHelper.PrintHead(writer, Attr.Description);
+        }
+
+        public void PrintHelp()
+        {
+            PrintHelp(Console.Out);
+        }
+
+        public void PrintHelp(TextWriter writer)
+        {
+            PrintHead(writer);
+            PrintPropertyHelp(writer);
+        }
+
         private void SetInternalProperties()
         {
             foreach (var item in Properties)

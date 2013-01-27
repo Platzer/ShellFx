@@ -18,6 +18,11 @@ namespace ShellFx.Arguments
             Width = width;
         }
 
+        public void PrintHead(TextWriter writer, string head)
+        {
+            writer.WriteLine(head);
+        }
+
         public void PrintPropertiesHelp(TextWriter writer, List<PropertyData> properties)
         {
             string[][] tabelle = new string[properties.Count() + 1][];
@@ -48,18 +53,48 @@ namespace ShellFx.Arguments
                                orderby t[3].Length descending
                                select t[3].Length).FirstOrDefault();
 
-            var formatString = GetPropertiesHelpFormatString(name, type, position, description);
-            //LAST: Hier den Zeilenumbruch abfangen...
+            int Buffer = 3;
+            var formatString = GetPropertiesHelpFormatString(name, type, position, description, Buffer);
+            
             foreach (var item in tabelle)
             {
-                writer.WriteLine(string.Format(formatString, item[0], item[1], item[2], item[3]));
+                if (name + type + position + description > Width - 1)
+                {
+                    var words = item[3].Split(' ');
+                    var SB = new StringBuilder();
+                    int wrapPos = name + type + position + Buffer * 4;
+                    int aktPos = wrapPos;
+                    foreach (var word in words)
+                    {
+                        if (aktPos + word.Length < Width - 1)
+                        {
+                            SB.Append(word);
+                            SB.Append(" ");
+                            aktPos += word.Length + 1;
+                        }
+                        else
+                        {
+                            SB.AppendLine();
+                            SB.Append(new String(' ', wrapPos));
+                            SB.Append(word);
+                            SB.Append(" ");
+                            aktPos = wrapPos + word.Length + 1;
+                        }
+                    }
+
+                    writer.WriteLine(string.Format(formatString, item[0], item[1], item[2], SB.ToString()));
+                }
+                else
+                {
+                    writer.WriteLine(string.Format(formatString, item[0], item[1], item[2], item[3]));
+                }
             }
         }
 
-        string GetPropertiesHelpFormatString(int nameLength, int typeLength, int positionLength, int descriptionLength)
+        string GetPropertiesHelpFormatString(int nameLength, int typeLength, int positionLength, int descriptionLength, int buffer)
         {
-            int Buffer = 3;
-            //"  -Pfad,(-p)  String 0 Beschreibung
+            int Buffer = buffer;
+            
             var SB = new StringBuilder();
             SB.Append(new String(' ', Buffer));
             SB.Append("{0,-");
@@ -68,9 +103,8 @@ namespace ShellFx.Arguments
             SB.Append(typeLength + Buffer);
             SB.Append("}{2,-");
             SB.Append(positionLength + Buffer);
-            SB.Append("}{3,-");
-            SB.Append(descriptionLength + Buffer);
-            SB.Append("}.");
+            SB.Append("}{3");
+            SB.Append("}");
 
             return SB.ToString();
         }

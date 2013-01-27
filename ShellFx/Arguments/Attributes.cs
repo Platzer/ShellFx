@@ -20,9 +20,9 @@ namespace ShellFx.Arguments
         public string ShortCut { get; private set; }
     }
 
-    public class ArgumentDescriptionAttribute : Attribute
+    public class DescriptionAttribute : Attribute
     {
-        public ArgumentDescriptionAttribute(string description)
+        public DescriptionAttribute(string description)
         {
             Description = description;
         }

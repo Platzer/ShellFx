@@ -8,13 +8,15 @@ using ShellFx.Arguments;
 
 namespace TestConsole
 {
+    [Description("Test überschrift.")]
     public class MyArgs
     {
         [Argument("Pfad", "p")]
-        [ArgumentDescription("Der Pfad zum testen einer sehr langen beschreibung und Zeilenumbruch")]
+        [Description("Der Pfad zum testen einer sehr langen beschreibung und Zeilenumbruch mit meherern Zeilen in der Beschreibung. Plus selbst eingebundene.")]
         public string Pfad { get; set; }
 
         [Argument("switch2", null)]
+        [Description("Zweiter Test für eine lange beschreibung")]
         public bool Switch2 { get; set; }
 
         [Argument("switch1", null)]
@@ -33,7 +35,7 @@ namespace TestConsole
         static void Main(string[] args)
         {
             var p = new ArgumentParser<MyArgs>();
-            p.PrintPropertyHelp();
+            p.PrintHelp();
         }
     }
 }

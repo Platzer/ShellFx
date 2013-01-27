@@ -24,7 +24,7 @@ namespace ShellFx.Arguments
             return (from m in members
                     where m.MemberType == MemberTypes.Property
                     let attArgument = m.GetCustomAttribute<ArgumentAttribute>(true)
-                    let attDescription = m.GetCustomAttribute<ArgumentDescriptionAttribute>(true)
+                    let attDescription = m.GetCustomAttribute<DescriptionAttribute>(true)
                     select new PropertyData(attArgument.Name,
                                             attArgument.ShortCut,
                                             m as PropertyInfo,
