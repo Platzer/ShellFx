@@ -36,6 +36,24 @@ namespace ShellFx.Arguments
             }
         }
 
+        private List<ActionData> actions = null;
+        protected List<ActionData> Actions
+        {
+            get
+            {
+                if (actions == null)
+                {
+                    actions = new List<ActionData>();
+                    ParseInternalArguments();
+                }
+                return actions;
+            }
+            set
+            {
+                actions = value;
+            }
+        }
+
         public ParserBase()
         {
             Type = typeof(T);
@@ -45,9 +63,12 @@ namespace ShellFx.Arguments
 
         protected void ParseInternalArguments()
         {
-            var members = Type.GetArguments<MemberInfo>();
-
             Properties = Result.GetPropertyData();
+        }
+
+        protected void ParseInternalActions()
+        {
+            Actions = Result.GetActionData();
         }
 
         protected virtual void ParseInternalParameter(string[] args)
@@ -64,6 +85,16 @@ namespace ShellFx.Arguments
             ParseInternalParameter(args);
 
             SetInternalProperties();
+
+            return Result;
+        }
+
+        public T Invoke(string[] args)
+        {
+            ParseInternalParameter(args);
+            ParseInternalActions();
+
+            InvokeInternal();
 
             return Result;
         }
@@ -115,6 +146,7 @@ namespace ShellFx.Arguments
             PrintPropertyHelp(writer);
         }
 
+        //TODO: Base Class?
         private void SetInternalProperties()
         {
             foreach (var item in Properties)
@@ -131,8 +163,23 @@ namespace ShellFx.Arguments
             }
         }
 
+        //TODO: Base Class?
+        private void InvokeInternal()
+        {
+            var action = (from a in Actions
+                          from p in Parameter
+                          where string.Compare(a.Name, p.Key, true) == 0 || string.Compare(a.ShortCut, p.Key, true) == 0
+                          select a).ToList().FirstOrDefault();
+            if (action != null)
+            {
+                action.Invoke();
+            }
+        }
+
+        //TODO: To base class?
         protected override void ParseInternalParameter(string[] args)
         {
+            //TODO: HELP /? -? --? einbauen...
             Regex RegexCurrentArgNull = new Regex(@"(?<sign>--|-|/)(?<arg>[\w]{1,})(((?<sep>:|=)(?<val>.*))|(?<val>\+|\-))?");
 
             string currentArg = null;

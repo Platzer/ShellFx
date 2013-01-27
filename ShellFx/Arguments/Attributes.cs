@@ -28,4 +28,17 @@ namespace ShellFx.Arguments
         }
         public string Description { get; private set; }
     }
+
+    public class ActionAttribute : Attribute
+    {
+        public ActionAttribute(string name, string shortCut)
+        {
+            Name = name;
+            ShortCut = shortCut;
+        }
+
+        public string Name { get; private set; }
+
+        public string ShortCut { get; private set; }
+    }
 }

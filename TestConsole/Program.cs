@@ -28,6 +28,12 @@ namespace TestConsole
         public int Int { get; set; }
 
         public string Text = string.Empty;
+
+        [Action("Action1",null)]
+        public void Action1()
+        {
+            Console.WriteLine("Action1 invoked...");
+        }
     }
 
     class Program
@@ -36,6 +42,7 @@ namespace TestConsole
         {
             var p = new ArgumentParser<MyArgs>();
             p.PrintHelp();
+            p.Invoke(args);
         }
     }
 }

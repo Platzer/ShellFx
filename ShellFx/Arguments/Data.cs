@@ -7,11 +7,32 @@ using System.Threading.Tasks;
 
 namespace ShellFx.Arguments
 {
-    public class PropertyData
+    public class DataBase
+    {
+        public string Name { get; protected set; }
+
+        public string ShortCut { get; protected set; }
+
+        public string Description { get; protected set; }
+
+        public int? Position { get; protected set; }
+
+        public object Object { get; protected set; }
+
+        public bool IsAnonymous
+        {
+            get
+            {
+                return ShortCut == null && Name == null;
+            }
+        }
+
+        public bool IsRequired { get; protected set; }
+    }
+
+    public class PropertyData : DataBase
     {
         public PropertyInfo Data { get; private set; }
-
-        public object Object { get; private set; }
 
         private ConverterEngine Converter { get; set; }
 
@@ -31,23 +52,26 @@ namespace ShellFx.Arguments
         {
             Data.SetValue(Object, Converter.Convert(Data,value));
         }
+    }
 
-        public string Name { get; private set; }
-
-        public string ShortCut { get; private set; }
-
-        public string Description { get; private set; }
-
-        public int? Position { get; private set; }
-
-        public bool IsAnonymous
+    public class ActionData : DataBase
+    {
+        public ActionData(string name, string shortCut, MethodInfo method, object obj, string description = null, int? position = null, bool isRequired = false)
         {
-            get
-            {
-                return ShortCut == null && Name == null;
-            }
+            Data = method;
+            Name = name;
+            ShortCut = shortCut;
+            Object = obj;
+            Description = description;
+            Position = position;
+            IsRequired = isRequired;
         }
 
-        public bool IsRequired { get; private set; }
+        public void Invoke()
+        {
+            Data.Invoke(Object, null);
+        }
+
+        public MethodInfo Data { get; private set; }
     }
 }
