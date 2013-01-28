@@ -47,11 +47,24 @@ namespace ShellFx.Arguments
                     where m.MemberType == MemberTypes.Property
                     let attArgument = m.GetCustomAttribute<ArgumentAttribute>(true)
                     let attDescription = m.GetCustomAttribute<DescriptionAttribute>(true)
+                    let attPosition = m.GetCustomAttribute<PositionAttribute>(true)
                     select new PropertyData(attArgument.Name,
                                             attArgument.ShortCut,
                                             m as PropertyInfo,
-                                            obj, 
-                                            description: attDescription != null ? attDescription.Description : null)).ToList();
+                                            obj,
+                                            description: attDescription != null ? attDescription.Description : null,
+                                            position: attPosition != null ? attPosition.Position as int? : null)).ToList();
+        }
+
+        internal static bool EqualsInteger(this string data, int position)
+        {
+            bool Result = false;
+            int parsedPosition;
+            Result = int.TryParse(data, out parsedPosition);
+            if (Result)
+                Result = position == parsedPosition;
+
+            return Result;
         }
     }
 }

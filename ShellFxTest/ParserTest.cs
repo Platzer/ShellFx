@@ -15,6 +15,7 @@ namespace ShellFxTest
             var parsed = new ArgumentParser<MyArgs>().Parse(args);
 
             Assert.IsTrue(parsed.Pfad == "c:\\test ordner");
+            Assert.IsTrue(parsed.OutPutPfad == "c:\\test ordner2");
             Assert.IsTrue(parsed.Switch1);
             Assert.IsFalse(parsed.Switch2);
             Assert.IsTrue(3.2 == parsed.Double);
@@ -35,6 +36,11 @@ namespace ShellFxTest
     {
         [Argument("Pfad","p")]
         public string Pfad { get; set; }
+
+        [Argument("OutPfad", null)]
+        [Position(0)]
+        [DefaultValue("c:\\default ordner")]
+        public string OutPutPfad { get; set; }
 
         [Argument("switch2",null)]
         [DefaultValue(false)]

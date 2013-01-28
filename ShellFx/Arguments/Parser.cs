@@ -151,21 +151,36 @@ namespace ShellFx.Arguments
         {
             foreach (var item in Properties)
             {
-                //TODO: Casesensetivity einbauen...
-                var Werte = from d in Parameter
-                            where string.Compare(d.Key, item.Name, true) == 0 || string.Compare(d.Key, item.ShortCut, true) == 0
-                            select d.Value;
-                //TODO: Wert mehrmals gesetzt...
-                if (Werte.Count() > 0)
+                if (!item.IsAnonymous)
                 {
-                    item.SetValue(Werte.First());
+                    //TODO: Casesensetivity einbauen...
+                    var Werte = from d in Parameter
+                                where string.Compare(d.Key, item.Name, true) == 0 || string.Compare(d.Key, item.ShortCut, true) == 0
+                                select d.Value;
+                    //TODO: Wert mehrmals gesetzt...
+                    if (Werte.Count() > 0)
+                    {
+                        item.SetValue(Werte.First());
+                    }
+                    else
+                    {
+                        var value = item.Data.GetCustomAttribute<DefaultValueAttribute>(true);
+                        if (value != null)
+                            item.SetValue(value.Value);
+                    }
                 }
-                else
+
+                if (item.Position.HasValue)
                 {
-                    var value = item.Data.GetCustomAttribute<DefaultValueAttribute>(true);
-                    if (value != null)
-                        item.SetValue(value.Value);
+                    var Wert = from p in Parameter
+                               where p.Key.EqualsInteger(item.Position.Value)
+                               select p.Value;
+                    if (Wert.Count() > 0)
+                    {
+                        item.SetValue(Wert.First());
+                    }
                 }
+
             }
         }
 
