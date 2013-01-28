@@ -11,7 +11,7 @@ namespace ShellFxTest
         [TestMethod]
         public void ParserTestMultipleValues()
         {
-            string[] args = new string[] {"c:\\test ordner2", "-Pfad", "c:\\test ordner", "/switch1", "/switch2-", "c:\\test ordner2", "--double=3.2" };
+            string[] args = new string[] { "c:\\test ordner2", "-Pfad", "c:\\test ordner", "/switch1", "c:\\test ordner2", "--double=3.2" };
             var parsed = new ArgumentParser<MyArgs>().Parse(args);
 
             Assert.IsTrue(parsed.Pfad == "c:\\test ordner");
@@ -37,6 +37,7 @@ namespace ShellFxTest
         public string Pfad { get; set; }
 
         [Argument("switch2",null)]
+        [DefaultValue(false)]
         public bool Switch2 { get; set; }
 
         [Argument("switch1", null)]

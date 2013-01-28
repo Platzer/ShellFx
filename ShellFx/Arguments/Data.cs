@@ -48,7 +48,7 @@ namespace ShellFx.Arguments
             IsRequired = isRequired;
         }
 
-        public void SetValue(string value)
+        public void SetValue(object value)
         {
             Data.SetValue(Object, Converter.Convert(Data,value));
         }

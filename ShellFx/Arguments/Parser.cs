@@ -156,9 +156,15 @@ namespace ShellFx.Arguments
                             where string.Compare(d.Key, item.Name, true) == 0 || string.Compare(d.Key, item.ShortCut, true) == 0
                             select d.Value;
                 //TODO: Wert mehrmals gesetzt...
-                if (Werte.Count() == 1)
+                if (Werte.Count() > 0)
                 {
                     item.SetValue(Werte.First());
+                }
+                else
+                {
+                    var value = item.Data.GetCustomAttribute<DefaultValueAttribute>(true);
+                    if (value != null)
+                        item.SetValue(value.Value);
                 }
             }
         }
@@ -174,6 +180,17 @@ namespace ShellFx.Arguments
             {
                 action.Invoke();
             }
+        }
+
+        private bool IsSwitch(string argument)
+        {
+            bool Result = false;
+
+            Result = (from p in Properties
+                      where string.Compare(p.Name, argument, true) == 0 || string.Compare(p.ShortCut, argument, true) == 0
+                      select p.Data.PropertyType == typeof(Boolean)).FirstOrDefault();
+
+            return Result;
         }
 
         //TODO: To base class?
@@ -193,7 +210,7 @@ namespace ShellFx.Arguments
                         currentArg = matches[0].Groups["arg"].Value.ToLower();
                         Parameter.Add(currentArg, null);
 
-                        if (!string.IsNullOrEmpty(matches[0].Groups["val"].Value))
+                        if (!string.IsNullOrEmpty(matches[0].Groups["val"].Value) || IsSwitch(currentArg))
                         {
                             Parameter[currentArg] = matches[0].Groups["val"].Value;
                             currentArg = null;

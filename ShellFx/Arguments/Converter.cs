@@ -9,7 +9,7 @@ namespace ShellFx.Arguments
 {
     public interface IConverter
     {
-        object Convert(MemberInfo member, string value);
+        object Convert(MemberInfo member, object value);
         Type Type {get;}
     }
 
@@ -26,7 +26,7 @@ namespace ShellFx.Arguments
 
         Dictionary<Type, IConverter> Converter { get; set; }
 
-        public object Convert(MemberInfo member, string value)
+        public object Convert(MemberInfo member, object value)
         {
             //TODO: den MemberTypen kontrollieren...
             return Converter[((PropertyInfo)member).PropertyType].Convert(member, value);
@@ -49,17 +49,21 @@ namespace ShellFx.Arguments
             Type = typeof(Boolean);
         }
 
-        public object Convert(MemberInfo member, string value)
+        public object Convert(MemberInfo member, object value)
         {
-            object ergebnis = value;
+            bool ergebnis = false;
 
             var prop = member as PropertyInfo;
-
             if (prop != null && prop.PropertyType == typeof(Boolean))
             {
-                if (value == null || value == "+")
+                string StringValue = null;
+                if (value == null)
+                    StringValue = null;
+                else
+                    StringValue = value.ToString();
+                if (StringValue == null || StringValue == string.Empty || StringValue == "+" || StringValue == "True")
                     ergebnis = true;
-                else if (value == "-")
+                else if (StringValue == "-" || StringValue == "False")
                     ergebnis = false;
             }
 
@@ -75,9 +79,9 @@ namespace ShellFx.Arguments
             Type = typeof(String);
         }
 
-        public object Convert(MemberInfo member, string value)
+        public object Convert(MemberInfo member, object value)
         {
-            return value;
+            return value.ToString();
         }
 
         public Type Type { get; private set; }
@@ -90,9 +94,18 @@ namespace ShellFx.Arguments
             Type = typeof(Double);
         }
 
-        public object Convert(MemberInfo member, string value)
+        public object Convert(MemberInfo member, object value)
         {
-            return System.Convert.ToDouble(value.Replace(".", ","));
+            double Result;
+            if (value.GetType() == typeof(Double))
+            {
+                Result = (Double)value;
+            }
+            else
+            {
+                Result = System.Convert.ToDouble(value.ToString().Replace(".", ","));
+            }
+            return Result;
         }
 
         public Type Type { get; private set; }

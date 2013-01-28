@@ -20,6 +20,24 @@ namespace ShellFx.Arguments
         public string ShortCut { get; private set; }
     }
 
+    public class DefaultValueAttribute : Attribute
+    {
+        public object Value { get; private set; }
+        public DefaultValueAttribute(object value)
+        {
+            Value = value;
+        }
+    }
+
+    public class PositionAttribute : Attribute
+    {
+        public int Position { get; private set; }
+        public PositionAttribute(int position)
+        {
+            Position = position;
+        }
+    }
+
     public class DescriptionAttribute : Attribute
     {
         public DescriptionAttribute(string description)
